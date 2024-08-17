@@ -7,11 +7,13 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
 import { PaymentModule } from './payment/payment.module';
+import { Payment, PaymentSchema } from './payment/schema/payment.schema';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env' }),
     MongooseModule.forRoot(process.env.MONGO_URL),
+    MongooseModule.forFeature([{ name: Payment.name, schema: PaymentSchema }]),
     UserModule,
     AuthModule,
     BookingModule,

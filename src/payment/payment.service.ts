@@ -5,12 +5,14 @@ import * as crypto from 'crypto';
 import { Model, Types } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
 import { Booking, BookingDocument } from '../booking/shcema/booking.schema';
+import { Payment, PaymentDocument } from './schema/payment.schema';
 
 @Injectable()
 export class PaymentService {
   constructor(
     private httpService: HttpService,
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+    @InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>,
   ) {}
   async createPaymentUrl(body: any) {
     const passCode = process.env.PASS_CODE;
@@ -45,6 +47,7 @@ export class PaymentService {
         headers: { 'Content-Type': 'multipart/form-data' },
       }),
     );
+
     return result.data;
   }
 
@@ -78,6 +81,45 @@ export class PaymentService {
         bank_code: 'EXB',
       };
       const rawSignature = `${body.merchant_site_code}|${body.order_code}|${body.order_description}|${body.amount}|${body.currency}|${body.buyer_fullname}|${body.buyer_email}|${body.buyer_mobile}|${body.buyer_address}|${body.return_url}|${body.cancel_url}|${body.notify_url}|${body.language}|${passCode}`;
+      const updateRawSignature = hash.update(rawSignature);
+      const signature = updateRawSignature.digest('hex');
+      body['checksum'] = signature;
+      const result = await firstValueFrom(
+        this.httpService.post(process.env.VIETCOMBANK_PAYMENT, body, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+      );
+      //** save payment information */
+      await this.paymentModel.findOneAndDelete({
+        confirmation_no: confirmationId,
+      });
+      await this.paymentModel.create({
+        confirmation_no: confirmationId,
+        token_code: result.data.result_data.token_code,
+        status: 'PENDING',
+      });
+      return result.data;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async checkOrder(confirmationId: string) {
+    try {
+      const passCode = process.env.PASS_CODE;
+      const hash = crypto.createHash('md5');
+      const payment = await this.paymentModel.findOne({
+        confirmation_no: confirmationId,
+      });
+      if (!payment) {
+        throw new BadRequestException('Payment not found!');
+      }
+      const body = {
+        function: 'CheckOrder',
+        merchant_site_code: 7,
+        token_code: payment.token_code,
+      };
+      const rawSignature = `${body.merchant_site_code}|${body.token_code}|${passCode}`;
       const updateRawSignature = hash.update(rawSignature);
       const signature = updateRawSignature.digest('hex');
       body['checksum'] = signature;

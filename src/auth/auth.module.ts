@@ -14,7 +14,7 @@ import { GoogleStrategy } from '../../libs/common/src/strategies/google.strategy
     ConfigModule.forRoot({ envFilePath: '.env' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '20s' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],

@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { LoginDto, RegisterDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
     }
   }
 
-  async login(body: LoginDto) {
+  async login(body: LoginDto, res: Response) {
     try {
       const { email, password } = body;
       const user = await this.userModel.findOne({ email });
@@ -49,6 +50,15 @@ export class AuthService {
       //** update refresh token */
       user.refresh_token = refreshToken;
       await user.save();
+      //** set http only */
+      res.cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      });
+      res.cookie('refresh_token', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      });
       return { accessToken, refreshToken };
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -66,9 +76,15 @@ export class AuthService {
         _id: user._id,
         email: user.email,
       });
+      const newRefreshToken = await this.jwtService.signAsync(
+        { _id: user._id, email: user.email },
+        { expiresIn: '180d' },
+      );
+      user.refresh_token = newRefreshToken;
+      await user.save();
       return {
         accessToken,
-        refreshToken: user.refresh_token,
+        refreshToken: newRefreshToken,
       };
     } catch (error) {
       throw new BadRequestException(error.message);

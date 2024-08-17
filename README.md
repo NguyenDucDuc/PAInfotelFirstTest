@@ -1,10 +1,10 @@
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+I use NestJS and MongoDB database to perform the test.
 
-Because I haven't had much exposure to XML, I probably need more time for task 2. I haven't been able to finish it yet.
+Unfortunately, I haven't been able to complete task 2 yet because I haven't had much exposure to XML, I probably need more time for task 2. I haven't been able to finish it yet.
 
-I assumed that the database had customer reservation data to do task 3, which is payment with VietComBank.
+I assumed that the database had customer reservation data to do task 3, which is payment with VietcomBank.
 
 ## Running with docker
 

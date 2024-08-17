@@ -33,8 +33,8 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Login with username and password' })
   @Post('login')
-  async login(@Body() body: LoginDto) {
-    return await this.authService.login(body);
+  async login(@Body() body: LoginDto, @Res() res: Response) {
+    return res.json(await this.authService.login(body, res));
   }
 
   @ApiBearerAuth()
