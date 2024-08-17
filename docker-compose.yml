@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3333:3333'
+    env_file:
+      - .env
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/pa_hotel
+    command: npm run start:dev
+    depends_on:
+      - mongo
+    networks:
+      - pa_network
+  mongo:
+    image: mongo
+    ports:
+      - '27018:27017'
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - pa_network
+
+networks:
+  pa_network:
+    driver: bridge
