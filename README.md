@@ -2,6 +2,10 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+Because I haven't had much exposure to XML, I probably need more time for task 2. I haven't been able to finish it yet.
+
+I assumed that the database had customer reservation data to do task 3, which is payment with VietComBank.
+
 ## Running with docker
 
 Requires a computer with Docker installed.
