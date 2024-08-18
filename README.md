@@ -6,6 +6,10 @@ Unfortunately, I haven't been able to complete task 2 yet because I haven't had 
 
 I assumed that the database had customer reservation data to do task 3, which is payment with VietcomBank.
 
+## Setup environment for project
+
+In the root directory of the project, create a file ".env". Next, copy the content of the "env.txt" file that I attached to the ".env" file you just created in the project.
+
 ## Running with docker
 
 Requires a computer with Docker installed.
