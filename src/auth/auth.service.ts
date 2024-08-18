@@ -20,7 +20,11 @@ export class AuthService {
       const user = await this.userModel.findOne({ email: body.email });
       if (user) throw new BadRequestException('Email already exists!');
       const hashed = await bcrypt.hash(body.password, 10);
-      return await this.userModel.create({ ...body, password: hashed });
+      const newUser = await this.userModel.create({
+        ...body,
+        password: hashed,
+      });
+      return { ...newUser['_doc'], password: '**********' };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
