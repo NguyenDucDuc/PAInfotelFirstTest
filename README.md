@@ -1,6 +1,6 @@
 ## Description
 
-I use NestJS and MongoDB database to perform the test.
+I use NestJS and MongoDB database to perform the test. I also use docker to build the project.
 
 Unfortunately, I haven't been able to complete task 2 yet because I haven't had much exposure to XML, I probably need more time for task 2. I haven't been able to finish it yet.
 
